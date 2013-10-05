@@ -4,6 +4,6 @@ namespace Adglopez.ServiceDocumenter.Core.Metadata
 {
     public interface IExporter
     {
-        void Export(Service service, string outputLocation);
+        void Export(Service service, string connectionString);
     }
 }

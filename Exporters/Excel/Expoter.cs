@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using Adglopez.ServiceDocumenter.Core.Metadata;
 using Adglopez.ServiceDocumenter.Core.Model;
 
@@ -7,20 +6,22 @@ namespace Adglopez.ServiceDocumenter.Exporters.Excel
 {
     public class Expoter : IExporter
     {
-        public void Export(Service service, string outputLocation)
+        public void Export(Service service, string connectionString)
         {
-            if (File.Exists(outputLocation))
+            if (File.Exists(connectionString))
             {
-                File.Delete(outputLocation);
+                File.Delete(connectionString);
             }
 
 
             using (var workBook = new ClosedXML.Excel.XLWorkbook())
             {
-                Console.WriteLine(workBook.Worksheets.Count);
+                foreach (var operation in service.Operations)
+                {
+                    
+                }
 
-
-                workBook.SaveAs(outputLocation);
+                workBook.SaveAs(connectionString);
             }            
         }
     }
