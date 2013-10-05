@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
+using System.Net;
 using System.Reflection;
 using System.Runtime.Serialization;
 using System.ServiceModel;
@@ -106,11 +107,11 @@ namespace Adglopez.ServiceDocumenter.Core.Metadata
 
         #region Metadata / Model Methods
 
-        private void LoadMetadata(string url, out Collection<ContractDescription> contracts, out ServiceEndpointCollection allEndpoints)
+        private void LoadMetadata(string url, out Collection<ContractDescription> contracts, out ServiceEndpointCollection endpoints)
         {
             // Define the metadata address, contract name, operation name, and parameters. 
             // You can choose between MEX endpoint and HTTP GET by changing the address and enum value.
-            var mexAddress = new Uri(url);
+            var mexAddress = new Uri(url.EndsWith(".svc", StringComparison.InvariantCultureIgnoreCase) ? url + "?wsdl" : url);
 
             // For MEX endpoints use a MEX address and a mexMode of .MetadataExchange
             const MetadataExchangeClientMode mexMode = MetadataExchangeClientMode.HttpGet;
@@ -123,7 +124,17 @@ namespace Adglopez.ServiceDocumenter.Core.Metadata
             var importer = new WsdlImporter(metaSet);
 
             contracts = importer.ImportAllContracts();
-            allEndpoints = importer.ImportAllEndpoints();
+            endpoints = importer.ImportAllEndpoints();
+
+            if (contracts.Count == 0)
+            {
+                throw new WebException("Contract information could not be obtained from the specified url (" + url + ")");
+            }
+
+            if (endpoints.Count == 0)
+            {
+                throw new WebException("Endpoint information could not be obtained from the specified url (" + url + ")");
+            }
         }
 
         private List<Endpoint> AddEndpoints(Dictionary<string, IEnumerable<ServiceEndpoint>> endpointsForContracts)
@@ -314,6 +325,7 @@ namespace Adglopez.ServiceDocumenter.Core.Metadata
                 null,
                 new object[] { serviceEndpoint.Binding, serviceEndpoint.Address },
                 CultureInfo.CurrentCulture, null);
+
             return instance;
         }
                 

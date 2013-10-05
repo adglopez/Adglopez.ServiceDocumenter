@@ -14,10 +14,14 @@ namespace Adglopez.ServiceDocumenter.Exporters.Excel
                 File.Delete(outputLocation);
             }
 
-            using (var workBook = new ClosedXML.Excel.XLWorkbook(outputLocation))
+
+            using (var workBook = new ClosedXML.Excel.XLWorkbook())
             {
                 Console.WriteLine(workBook.Worksheets.Count);
-            }
+
+
+                workBook.SaveAs(outputLocation);
+            }            
         }
     }
 }

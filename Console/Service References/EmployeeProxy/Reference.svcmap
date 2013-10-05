@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ReferenceGroup xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" ID="27a410ee-4fd8-48ca-87d6-dcbdf638dab0" xmlns="urn:schemas-microsoft-com:xml-wcfservicemap">
+  <ClientOptions>
+    <GenerateAsynchronousMethods>false</GenerateAsynchronousMethods>
+    <GenerateTaskBasedAsynchronousMethod>true</GenerateTaskBasedAsynchronousMethod>
+    <EnableDataBinding>true</EnableDataBinding>
+    <ExcludedTypes />
+    <ImportXmlTypes>false</ImportXmlTypes>
+    <GenerateInternalTypes>false</GenerateInternalTypes>
+    <GenerateMessageContracts>false</GenerateMessageContracts>
+    <NamespaceMappings />
+    <CollectionMappings />
+    <GenerateSerializableTypes>true</GenerateSerializableTypes>
+    <Serializer>Auto</Serializer>
+    <UseSerializerForFaults>true</UseSerializerForFaults>
+    <ReferenceAllAssemblies>true</ReferenceAllAssemblies>
+    <ReferencedAssemblies />
+    <ReferencedDataContractTypes />
+    <ServiceContractMappings />
+  </ClientOptions>
+  <MetadataSources>
+    <MetadataSource Address="http://localhost/Adglopez.Documenter.Samples/Employees.svc" Protocol="http" SourceId="1" />
+  </MetadataSources>
+  <Metadata>
+    <MetadataFile FileName="Employees.xsd" MetadataType="Schema" ID="f748749d-b4df-4853-b671-8d2e34aafbc4" SourceId="1" SourceUrl="http://localhost/Adglopez.Documenter.Samples/Employees.svc?xsd=xsd0" />
+    <MetadataFile FileName="Employees1.xsd" MetadataType="Schema" ID="dc4848ac-c9f2-4de6-bf86-c808a1e73b53" SourceId="1" SourceUrl="http://localhost/Adglopez.Documenter.Samples/Employees.svc?xsd=xsd1" />
+    <MetadataFile FileName="Employees2.xsd" MetadataType="Schema" ID="108b3110-c454-47af-b264-14f07883450b" SourceId="1" SourceUrl="http://localhost/Adglopez.Documenter.Samples/Employees.svc?xsd=xsd2" />
+    <MetadataFile FileName="EmployeesService.wsdl" MetadataType="Wsdl" ID="d5984d98-a894-48e2-bb65-f361cad66f63" SourceId="1" SourceUrl="http://localhost/Adglopez.Documenter.Samples/Employees.svc?wsdl" />
+    <MetadataFile FileName="Employees.wsdl" MetadataType="Wsdl" ID="fc20c530-f18d-4a50-a9ba-b38f236f8b6d" SourceId="1" SourceUrl="http://localhost/Adglopez.Documenter.Samples/Employees.svc?wsdl=wsdl0" />
+    <MetadataFile FileName="Employees.disco" MetadataType="Disco" ID="63183a97-548f-408e-9480-eaacca15d7f2" SourceId="1" SourceUrl="http://localhost/Adglopez.Documenter.Samples/Employees.svc?disco" />
+  </Metadata>
+  <Extensions>
+    <ExtensionFile FileName="configuration91.svcinfo" Name="configuration91.svcinfo" />
+    <ExtensionFile FileName="configuration.svcinfo" Name="configuration.svcinfo" />
+  </Extensions>
+</ReferenceGroup>

@@ -10,7 +10,6 @@ namespace Adglopez.ServiceDocumenter.Console
             var document = args.Length > 1 ? args[1] : "Employee.xlsx";
 
             var metadataReader = new MetadataReader();
-
             var exporter = new Exporters.Excel.Expoter();
 
             var serviceInfo = metadataReader.ParseMetadata(url);
