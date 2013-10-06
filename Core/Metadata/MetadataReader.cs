@@ -109,16 +109,19 @@ namespace Adglopez.ServiceDocumenter.Core.Metadata
 
         private void LoadMetadata(string url, out Collection<ContractDescription> contracts, out ServiceEndpointCollection endpoints)
         {
+            url = url.EndsWith(".svc", StringComparison.InvariantCultureIgnoreCase) ? url + "?wsdl" : url;
+
             // Define the metadata address, contract name, operation name, and parameters. 
             // You can choose between MEX endpoint and HTTP GET by changing the address and enum value.
-            var mexAddress = new Uri(url.EndsWith(".svc", StringComparison.InvariantCultureIgnoreCase) ? url + "?wsdl" : url);
-
-            // For MEX endpoints use a MEX address and a mexMode of .MetadataExchange
-            const MetadataExchangeClientMode mexMode = MetadataExchangeClientMode.HttpGet;
+            var mexAddress = new Uri(url);
 
             // Get the metadata file from the service.
-            var mexClient = new MetadataExchangeClient(mexAddress, mexMode) { ResolveMetadataReferences = true };
-            MetadataSet metaSet = mexClient.GetMetadata();
+            var binding = new WSHttpBinding(SecurityMode.None) { MaxReceivedMessageSize = 50000000 };
+
+            var mexClient = new MetadataExchangeClient(binding);
+
+            // For MEX endpoints use a MEX address and a mexMode of .MetadataExchange
+            MetadataSet metaSet = mexClient.GetMetadata(mexAddress, MetadataExchangeClientMode.HttpGet);
 
             // Import all contracts and endpoints
             var importer = new WsdlImporter(metaSet);
