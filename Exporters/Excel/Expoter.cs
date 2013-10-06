@@ -157,6 +157,7 @@ namespace Adglopez.ServiceDocumenter.Exporters.Excel
                 worksheet.Cell(currentRow, 1).Style.Font.Bold = true;
                 worksheet.Cell(currentRow, 2).Value = property.Value;
             }
+            
             foreach (var nextChild in child.Value.Childs)
             {
                 currentRow = WriteComplexType(nextChild, worksheet, currentRow, deep + 1);

@@ -9,8 +9,8 @@ using System.Reflection;
 using System.Runtime.Serialization;
 using System.ServiceModel;
 using System.ServiceModel.Description;
-using Adglopez.ServiceDocumenter.Core.Metadata.Exceptions;
 using Adglopez.ServiceDocumenter.Core.Model;
+using Adglopez.ServiceDocumenter.Core.Metadata.Exceptions;
 
 namespace Adglopez.ServiceDocumenter.Core.Metadata
 {
@@ -35,8 +35,7 @@ namespace Adglopez.ServiceDocumenter.Core.Metadata
             CompileProxy(generator, out clientProxyType);
 
             // Once the proxy type is found it obtains the Interface that correspondes to the service contract
-            Type contractInterface = clientProxyType.GetInterfaces().First(i => i.FullName != typeof(ICommunicationObject).FullName
-                                                                             && i.FullName != typeof(IDisposable).FullName);
+            Type contractInterface = clientProxyType.GetInterfaces().First(i => i.FullName != typeof(ICommunicationObject).FullName && i.FullName != typeof(IDisposable).FullName);
 
             var contract = contracts.Single(c => c.Name == contractInterface.Name);
             
@@ -267,6 +266,7 @@ namespace Adglopez.ServiceDocumenter.Core.Metadata
         {
             // Generate type information for each contract
             var generator = new ServiceContractGenerator();
+
             endpointsForContracts = new Dictionary<string, IEnumerable<ServiceEndpoint>>();
 
             foreach (ContractDescription contract in contracts)
