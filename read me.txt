@@ -1,0 +1,4 @@
+The main idea is to provide a way to export the metadata published in a Wcf service.
+
+Core: Given a Url, MetadataReader allows to parse the metadata of the service and returns a simple model.
+Exporters: At the moment export to excel thanks to the AWESOME library CloseXml (https://closedxml.codeplex.com)
