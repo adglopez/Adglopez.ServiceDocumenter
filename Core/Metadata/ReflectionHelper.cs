@@ -5,11 +5,11 @@ using System.Reflection;
 
 namespace Adglopez.ServiceDocumenter.Core.Metadata
 {
-    public static class TypeChecker
+    public static class ReflectionHelper
     {
         public static readonly Type[] List;
 
-        static TypeChecker()
+        static ReflectionHelper()
         {
             var types = new[]
                           {
@@ -32,7 +32,7 @@ namespace Adglopez.ServiceDocumenter.Core.Metadata
                               typeof (DateTimeOffset),
                               typeof (TimeSpan),
                               typeof(Guid)
-                          };            
+                          };
             var nullTypes = from t in types
                             where t.IsValueType
                             select typeof(Nullable<>).MakeGenericType(t);
@@ -85,6 +85,23 @@ namespace Adglopez.ServiceDocumenter.Core.Metadata
                                      "GetType"
                                  };
             return !ignoredMethods.Contains(name);
+        }
+
+        public static string GetFriendlyTypeName(Type type)
+        {
+            string friendlyName;
+
+            if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
+            {
+                type = type.GetGenericArguments()[0];
+                friendlyName = type.Name + "?";
+            }
+            else
+            {
+                friendlyName = type.Name;    
+            }
+            
+            return friendlyName;
         }
     }
 }

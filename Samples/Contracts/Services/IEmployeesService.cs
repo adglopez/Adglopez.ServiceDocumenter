@@ -10,7 +10,7 @@ namespace Adglopez.ServiceDocumenter.Services.Contracts.Services
         [OperationContract]
         AddEmployeeResp Add(AddEmployeeReq req);
 
-        //[OperationContract]
-        //DateTime Echo();
+        [OperationContract]
+        DateTime Echo();
     }
 }

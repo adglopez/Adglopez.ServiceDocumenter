@@ -53,7 +53,7 @@
     <Compile Include="Metadata\Exceptions\ClientNotFoundException.cs" />
     <Compile Include="Metadata\MetadataReader.cs" />
     <Compile Include="Metadata\Exceptions\ProxyCompilerException.cs" />
-    <Compile Include="Metadata\TypeChecker.cs" />
+    <Compile Include="Metadata\ReflectionHelper.cs" />
     <Compile Include="Model\Binding.cs" />
     <Compile Include="Model\Endpoint.cs" />
     <Compile Include="Model\ParameterType.cs" />

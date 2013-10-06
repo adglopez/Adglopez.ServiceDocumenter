@@ -1,6 +1,6 @@
-﻿using Adglopez.ServiceDocumenter.Core.Model;
+﻿using ClosedXML.Excel;
+using Adglopez.ServiceDocumenter.Core.Model;
 using Adglopez.ServiceDocumenter.Core.Metadata;
-using ClosedXML.Excel;
 
 namespace Adglopez.ServiceDocumenter.Exporters.Excel
 {
@@ -112,6 +112,13 @@ namespace Adglopez.ServiceDocumenter.Exporters.Excel
             worksheet.Cell(currentRow, 1).Style.Font.Bold = true;
             worksheet.Cell(currentRow, 2).Value = message.IsOptional ? "No" : "Yes";
 
+            if (!message.IsComplex)
+            {
+                currentRow++;
+                return currentRow;
+            }
+
+            currentRow++;
             currentRow++;
             worksheet.Cell(currentRow, 1).Value = "Properties";
             worksheet.Cell(currentRow, 1).Style.Font.Bold = true;
@@ -124,12 +131,9 @@ namespace Adglopez.ServiceDocumenter.Exporters.Excel
                 worksheet.Cell(currentRow, 2).Value = property.Value;
             }
 
-            if (message.IsComplex)
+            foreach (var child in message.Childs)
             {
-                foreach (var child in message.Childs)
-                {
-                    currentRow = WriteComplexType(child, worksheet, currentRow, 1);
-                }
+                currentRow = WriteComplexType(child, worksheet, currentRow, 1);
             }
 
             currentRow += 2;

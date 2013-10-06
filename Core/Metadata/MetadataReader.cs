@@ -162,7 +162,7 @@ namespace Adglopez.ServiceDocumenter.Core.Metadata
         {
             var modelOperations = new List<Operation>();
 
-            foreach (var operation in clientProxyType.GetMethods().Where(op => TypeChecker.IsServiceOperation(op)))
+            foreach (var operation in clientProxyType.GetMethods().Where(op => ReflectionHelper.IsServiceOperation(op)))
             {
                 var modelOperation = new Operation { Name = operation.Name, Input = new List<ParameterType>(), Output = new List<ParameterType>() };
 
@@ -195,8 +195,8 @@ namespace Adglopez.ServiceDocumenter.Core.Metadata
                 Position = parameterInfo.Position,
                 IsOut = parameterInfo.IsOut,
                 IsOptional = parameterInfo.IsOptional,
-                IsComplex = !TypeChecker.IsSimpleType(parameterInfo.ParameterType),
-                IsCollection = TypeChecker.IsCollection(parameterInfo),
+                IsComplex = !ReflectionHelper.IsSimpleType(parameterInfo.ParameterType),
+                IsCollection = ReflectionHelper.IsCollection(parameterInfo),
                 Childs = new Dictionary<string, ParameterType>(),
                 Properties = new Dictionary<string, string>()
             };
@@ -207,9 +207,9 @@ namespace Adglopez.ServiceDocumenter.Core.Metadata
             {
                 var paramPropertyType = paramProperty.PropertyType;
 
-                if (TypeChecker.IsSimpleType(paramPropertyType))
+                if (ReflectionHelper.IsSimpleType(paramPropertyType))
                 {
-                    modelParameter.Properties.Add(paramProperty.Name, paramPropertyType.Name);
+                    modelParameter.Properties.Add(paramProperty.Name, ReflectionHelper.GetFriendlyTypeName(paramPropertyType));
                 }
                 else
                 {
@@ -229,7 +229,7 @@ namespace Adglopez.ServiceDocumenter.Core.Metadata
                 Name = type.Name,
                 TypeName = type.ToString(),
                 IsOut = null,
-                IsCollection = TypeChecker.IsCollection(type),
+                IsCollection = ReflectionHelper.IsCollection(type),
                 Properties = new Dictionary<string, string>(),
                 Childs = new Dictionary<string, ParameterType>()
             };
@@ -243,9 +243,9 @@ namespace Adglopez.ServiceDocumenter.Core.Metadata
             {
                 var paramPropertyType = paramProperty.PropertyType;
 
-                if (TypeChecker.IsSimpleType(paramPropertyType))
+                if (ReflectionHelper.IsSimpleType(paramPropertyType))
                 {
-                    parameter.Properties.Add(paramProperty.Name, paramPropertyType.Name);
+                    parameter.Properties.Add(paramProperty.Name, ReflectionHelper.GetFriendlyTypeName(paramPropertyType));
                 }
                 else
                 {
