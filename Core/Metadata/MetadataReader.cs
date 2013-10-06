@@ -39,9 +39,10 @@ namespace Adglopez.ServiceDocumenter.Core.Metadata
                                                                              && i.FullName != typeof(IDisposable).FullName);
 
             var contract = contracts.Single(c => c.Name == contractInterface.Name);
-
+            
             var modelService = new Service
             {
+                Name = new Uri(url).Segments.Last(),
                 Url = url,
                 Contract = contract.Name,
                 Namespace = contract.Namespace,
