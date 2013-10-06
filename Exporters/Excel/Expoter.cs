@@ -10,7 +10,7 @@ namespace Adglopez.ServiceDocumenter.Exporters.Excel
         private const string TemplatePath = @"..\..\..\Assets\Template.xlsx";
 
         public void Export(Service service, string connectionString)
-        {            
+        {
             using (var workBook = new ClosedXML.Excel.XLWorkbook(TemplatePath))
             {
                 var summaryWorksheet = workBook.Worksheet("Summary");
@@ -19,15 +19,15 @@ namespace Adglopez.ServiceDocumenter.Exporters.Excel
                 summaryWorksheet.Cell(2, 2).Value = service.Name = service.Namespace;
                 summaryWorksheet.Cell(3, 2).Value = service.Name = service.Url;
                 summaryWorksheet.Cell(4, 2).Value = service.Name = service.Contract;
-                
-                for(int idx = 0; idx < service.Endpoints.Count ; idx++)
+
+                for (int idx = 0; idx < service.Endpoints.Count; idx++)
                 {
                     summaryWorksheet.Cell(6 + idx, 2).Value = service.Endpoints[idx].Name;
                     summaryWorksheet.Cell(6 + idx, 3).Value = string.Format("{0} ({1})", service.Endpoints[idx].Binding.Name, service.Endpoints[idx].Binding.Type);
                     summaryWorksheet.Cell(6 + idx, 4).Value = service.Endpoints[idx].Address;
 
                     summaryWorksheet.Column(2).AdjustToContents();
-                    summaryWorksheet.Column(3).AdjustToContents(); 
+                    summaryWorksheet.Column(3).AdjustToContents();
                     summaryWorksheet.Column(4).AdjustToContents();
                 }
 
@@ -49,7 +49,7 @@ namespace Adglopez.ServiceDocumenter.Exporters.Excel
                     {
                         currentRow = WriteMessage(message, opeartionWorksheet, currentRow, true);
                     }
-                    
+
                     // Write Return Message (if present)
                     WriteMessage(operation.Output.FirstOrDefault(), opeartionWorksheet, currentRow, false);
                 }
@@ -57,7 +57,7 @@ namespace Adglopez.ServiceDocumenter.Exporters.Excel
                 workBook.Worksheet("Operation").Delete();
 
                 workBook.Save(connectionString);
-            }            
+            }
         }
 
         private int WriteMessage(ParameterType message, IXLWorksheet worksheet, int currentRow, bool isInput)
@@ -70,7 +70,7 @@ namespace Adglopez.ServiceDocumenter.Exporters.Excel
             worksheet.Cell(currentRow, 1).Value = "Message";
             worksheet.Cell(currentRow, 1).Style.Font.Bold = true;
             worksheet.Cell(currentRow, 2).Value = isInput ? message.Name : "response";
-            
+
             currentRow++;
             worksheet.Cell(currentRow, 1).Value = "Type";
             worksheet.Cell(currentRow, 1).Style.Font.Bold = true;
@@ -84,7 +84,6 @@ namespace Adglopez.ServiceDocumenter.Exporters.Excel
             currentRow++;
             worksheet.Cell(currentRow, 1).Value = "Fields";
             worksheet.Cell(currentRow, 1).Style.Font.Bold = true;
-            worksheet.Cell(currentRow, 2).Value = "List of fields goes here";
 
             if (message.IsComplex)
             {
@@ -95,12 +94,31 @@ namespace Adglopez.ServiceDocumenter.Exporters.Excel
                     worksheet.Cell(currentRow, 1).Style.Font.Bold = true;
                     worksheet.Cell(currentRow, 2).Value = property.Value;
                 }
+                foreach (var child in message.Childs)
+                {
+                    currentRow = WriteComplexType(child, worksheet, currentRow);
+                }
             }
 
-            
-            currentRow+=2;
+            currentRow += 2;
             worksheet.Cell(currentRow, 1).Value = string.Empty;
-            
+
+            return currentRow;
+        }
+
+        private int WriteComplexType(System.Collections.Generic.KeyValuePair<string, ParameterType> child, IXLWorksheet worksheet, int currentRow)
+        {
+            foreach (var property in child.Value.Properties)
+            {
+                currentRow++;
+                worksheet.Cell(currentRow, 1).Value = property.Key;
+                worksheet.Cell(currentRow, 1).Style.Font.Bold = true;
+                worksheet.Cell(currentRow, 2).Value = property.Value;
+            }
+            foreach (var nextChild in child.Value.Childs)
+            {
+                currentRow = WriteComplexType(nextChild, worksheet, currentRow);
+            }
             return currentRow;
         }
     }
