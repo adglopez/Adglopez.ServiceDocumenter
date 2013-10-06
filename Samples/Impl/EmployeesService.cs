@@ -24,9 +24,9 @@ namespace Adglopez.ServiceDocumenter.Services.Impl
                    };
         }
 
-        public DateTime Echo()
-        {
-            return DateTime.UtcNow;
-        }
+        //public DateTime Echo()
+        //{
+        //    return DateTime.UtcNow;
+        //}
     }
 }

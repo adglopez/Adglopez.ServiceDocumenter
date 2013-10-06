@@ -35,23 +35,55 @@ namespace Adglopez.ServiceDocumenter.Exporters.Excel
                 {
                     // Write Opeation (general info)
                     var opeartionWorksheetName = workBook.Worksheets.EnsureUniqueName(operation.Name);
-                    var opeartionWorksheet = workBook.Worksheet("Operation").CopyTo(opeartionWorksheetName);
+                    var operationWorksheet = workBook.Worksheet("Operation").CopyTo(opeartionWorksheetName);
 
-                    opeartionWorksheet.Cell(1, 1).Value = "Operation";
-                    opeartionWorksheet.Cell(1, 1).Style.Font.Bold = true;
-                    opeartionWorksheet.Cell(1, 2).Value = operation.Name;
+                    operationWorksheet.Cell(1, 1).Value = "Operation";
+                    operationWorksheet.Cell(1, 1).Style.Font.Bold = true;
+                    operationWorksheet.Cell(1, 2).Value = operation.Name;
 
                     // Operation (detailed info)
                     const int initialRow = 4;
                     int currentRow = initialRow;
+                    operationWorksheet.Cell(currentRow, 1).Value = "INPUTS";
+                    operationWorksheet.Cell(currentRow, 1).Style.Font.Bold = true;
+                    operationWorksheet.Cell(currentRow, 1).Style.Fill.BackgroundColor = XLColor.Gray;
+                    currentRow++;
+
                     // Write Input Messages
-                    foreach (var message in operation.Input)
+                    if (operation.Input.Count == 0)
                     {
-                        currentRow = WriteMessage(message, opeartionWorksheet, currentRow, true);
+                        operationWorksheet.Cell(currentRow, 2).Value = "No inputs are received";
+                        currentRow += 3;
+                    }
+                    else
+                    {
+                        foreach (ParameterType type in operation.Input)
+                        {
+                            currentRow = WriteMessage(type, operationWorksheet, currentRow, true);
+                        }
                     }
 
-                    // Write Return Message (if present)
-                    WriteMessage(operation.Output.FirstOrDefault(), opeartionWorksheet, currentRow, false);
+                    // Write Ouptus Messages
+                    operationWorksheet.Cell(currentRow, 1).Value = "OUTPUTS";
+                    operationWorksheet.Cell(currentRow, 1).Style.Font.Bold = true;
+                    operationWorksheet.Cell(currentRow, 1).Style.Fill.BackgroundColor = XLColor.Gray;
+                    currentRow++;
+
+                    if (operation.Output.Count == 0)
+                    {
+                        operationWorksheet.Cell(currentRow, 2).Value = "No outputs are returned";
+                        currentRow += 3;
+                    }
+                    else
+                    {
+                        foreach (ParameterType type in operation.Output)
+                        {
+                            currentRow = WriteMessage(type, operationWorksheet, currentRow, false);
+                        }
+                    }
+
+                    operationWorksheet.Cell(currentRow + 1, 1).Value = string.Empty;
+                    operationWorksheet.Column(2).AdjustToContents();
                 }
 
                 workBook.Worksheet("Operation").Delete();
@@ -85,18 +117,19 @@ namespace Adglopez.ServiceDocumenter.Exporters.Excel
             worksheet.Cell(currentRow, 1).Value = "Fields";
             worksheet.Cell(currentRow, 1).Style.Font.Bold = true;
 
+            foreach (var property in message.Properties)
+            {
+                currentRow++;
+                worksheet.Cell(currentRow, 1).Value = property.Key;
+                worksheet.Cell(currentRow, 1).Style.Font.Bold = true;
+                worksheet.Cell(currentRow, 2).Value = property.Value;
+            }
+
             if (message.IsComplex)
             {
-                foreach (var property in message.Properties)
-                {
-                    currentRow++;
-                    worksheet.Cell(currentRow, 1).Value = property.Key;
-                    worksheet.Cell(currentRow, 1).Style.Font.Bold = true;
-                    worksheet.Cell(currentRow, 2).Value = property.Value;
-                }
                 foreach (var child in message.Childs)
                 {
-                    currentRow = WriteComplexType(child, worksheet, currentRow);
+                    currentRow = WriteComplexType(child, worksheet, currentRow, 1);
                 }
             }
 
@@ -106,18 +139,28 @@ namespace Adglopez.ServiceDocumenter.Exporters.Excel
             return currentRow;
         }
 
-        private int WriteComplexType(System.Collections.Generic.KeyValuePair<string, ParameterType> child, IXLWorksheet worksheet, int currentRow)
+        private int WriteComplexType(System.Collections.Generic.KeyValuePair<string, ParameterType> child, IXLWorksheet worksheet, int currentRow, int deep)
         {
+            currentRow++;
+            worksheet.Cell(currentRow, 1).Value = "Name";
+            worksheet.Cell(currentRow, 1).Style.Font.Bold = true;
+            worksheet.Cell(currentRow, 2).Value = child.Key.PrependTabs(deep);
+
+            currentRow++;
+            worksheet.Cell(currentRow, 1).Value = "Type";
+            worksheet.Cell(currentRow, 1).Style.Font.Bold = true;
+            worksheet.Cell(currentRow, 2).Value = child.Value.Name.PrependTabs(deep);
+
             foreach (var property in child.Value.Properties)
             {
                 currentRow++;
-                worksheet.Cell(currentRow, 1).Value = property.Key;
+                worksheet.Cell(currentRow, 1).Value = property.Key.PrependTabs(deep);
                 worksheet.Cell(currentRow, 1).Style.Font.Bold = true;
-                worksheet.Cell(currentRow, 2).Value = property.Value;
+                worksheet.Cell(currentRow, 2).Value = property.Value.PrependTabs(deep);
             }
             foreach (var nextChild in child.Value.Childs)
             {
-                currentRow = WriteComplexType(nextChild, worksheet, currentRow);
+                currentRow = WriteComplexType(nextChild, worksheet, currentRow, deep + 1);
             }
             return currentRow;
         }

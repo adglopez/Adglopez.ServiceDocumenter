@@ -201,7 +201,9 @@ namespace Adglopez.ServiceDocumenter.Core.Metadata
                 Properties = new Dictionary<string, string>()
             };
 
-            foreach (var paramProperty in parameterInfo.ParameterType.GetProperties())
+            var parameterType = parameterInfo.ParameterType;
+
+            foreach (var paramProperty in parameterType.GetProperties())
             {
                 var paramPropertyType = paramProperty.PropertyType;
 

@@ -14,4 +14,6 @@ let main argv =
 
     System.Console.WriteLine("Exporting {0} to {1} completed...", url, document)
 
+    ignore (System.Diagnostics.Process.Start("Excel.exe", document))
+
     0 // return an integer exit code
