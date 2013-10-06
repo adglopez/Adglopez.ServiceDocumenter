@@ -1,5 +1,4 @@
-﻿using System.Data.Odbc;
-using System.Linq;
+﻿using System.Linq;
 using Adglopez.ServiceDocumenter.Core.Model;
 using Adglopez.ServiceDocumenter.Core.Metadata;
 using ClosedXML.Excel;
@@ -69,22 +68,22 @@ namespace Adglopez.ServiceDocumenter.Exporters.Excel
             }
 
             worksheet.Cell(currentRow, 1).Value = "Message";
-            worksheet.Cell(1, 1).Style.Font.Bold = true;
-            worksheet.Cell(currentRow, 2).Value = isInput ? message.Name : "Response";
+            worksheet.Cell(currentRow, 1).Style.Font.Bold = true;
+            worksheet.Cell(currentRow, 2).Value = isInput ? message.Name : "response";
             
             currentRow++;
             worksheet.Cell(currentRow, 1).Value = "Type";
-            worksheet.Cell(1, 1).Style.Font.Bold = true;
+            worksheet.Cell(currentRow, 1).Style.Font.Bold = true;
             worksheet.Cell(currentRow, 2).Value = message.TypeName;
 
             currentRow++;
             worksheet.Cell(currentRow, 1).Value = "Mandatory";
-            worksheet.Cell(1, 1).Style.Font.Bold = true;
+            worksheet.Cell(currentRow, 1).Style.Font.Bold = true;
             worksheet.Cell(currentRow, 2).Value = message.IsOptional ? "No" : "Yes";
 
             currentRow++;
             worksheet.Cell(currentRow, 1).Value = "Fields";
-            worksheet.Cell(1, 1).Style.Font.Bold = true;
+            worksheet.Cell(currentRow, 1).Style.Font.Bold = true;
             worksheet.Cell(currentRow, 2).Value = "List of fields goes here";
 
             if (message.IsComplex)
@@ -93,11 +92,10 @@ namespace Adglopez.ServiceDocumenter.Exporters.Excel
                 {
                     currentRow++;
                     worksheet.Cell(currentRow, 1).Value = property.Key;
-                    worksheet.Cell(1, 1).Style.Font.Bold = true;
+                    worksheet.Cell(currentRow, 1).Style.Font.Bold = true;
                     worksheet.Cell(currentRow, 2).Value = property.Value;
                 }
             }
-
 
             
             currentRow+=2;

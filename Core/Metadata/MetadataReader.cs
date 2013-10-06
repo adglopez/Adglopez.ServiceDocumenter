@@ -190,7 +190,8 @@ namespace Adglopez.ServiceDocumenter.Core.Metadata
             var modelParameter = new ParameterType
             {
                 Name = parameterInfo.Name,
-                TypeName = parameterInfo.ToString(),
+                FullTypeName = parameterInfo.ParameterType.FullName,
+                TypeName = parameterInfo.ParameterType.Name,
                 Position = parameterInfo.Position,
                 IsOut = parameterInfo.IsOut,
                 IsOptional = parameterInfo.IsOptional,

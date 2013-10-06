@@ -6,6 +6,7 @@ namespace Adglopez.ServiceDocumenter.Core.Model
     {
         public string Name { get; set; }
         public string TypeName { get; set; }
+        public string FullTypeName { get; set; }
         public bool IsCollection { get; set; }
         public bool IsOptional { get; set; }
         public bool IsComplex { get; set; }
