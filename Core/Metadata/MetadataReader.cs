@@ -177,7 +177,7 @@ namespace Adglopez.ServiceDocumenter.Core.Metadata
                 {
                     var parameter = AddOperationParamter(operation.ReturnParameter);
 
-                    modelOperation.Input.Add(parameter);
+                    modelOperation.Output.Add(parameter);
                 }
 
                 modelOperations.Add(modelOperation);
@@ -194,6 +194,7 @@ namespace Adglopez.ServiceDocumenter.Core.Metadata
                 Position = parameterInfo.Position,
                 IsOut = parameterInfo.IsOut,
                 IsOptional = parameterInfo.IsOptional,
+                IsComplex = !TypeChecker.IsSimpleType(parameterInfo.ParameterType),
                 IsCollection = TypeChecker.IsCollection(parameterInfo),
                 Childs = new Dictionary<string, ParameterType>(),
                 Properties = new Dictionary<string, string>()

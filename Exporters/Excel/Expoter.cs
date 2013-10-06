@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Data.Odbc;
+using System.Linq;
 using Adglopez.ServiceDocumenter.Core.Model;
 using Adglopez.ServiceDocumenter.Core.Metadata;
 using ClosedXML.Excel;
@@ -43,8 +44,13 @@ namespace Adglopez.ServiceDocumenter.Exporters.Excel
 
                     // Operation (detailed info)
                     const int initialRow = 4;
+                    int currentRow = initialRow;
                     // Write Input Messages
-                    int currentRow = operation.Input.Aggregate(initialRow, (current, message) => WriteMessage(message, opeartionWorksheet, current, true));
+                    foreach (var message in operation.Input)
+                    {
+                        currentRow = WriteMessage(message, opeartionWorksheet, currentRow, true);
+                    }
+                    
                     // Write Return Message (if present)
                     WriteMessage(operation.Output.FirstOrDefault(), opeartionWorksheet, currentRow, false);
                 }
@@ -55,32 +61,48 @@ namespace Adglopez.ServiceDocumenter.Exporters.Excel
             }            
         }
 
-        private int WriteMessage(ParameterType message, IXLWorksheet opeartionWorksheet, int currentRow, bool isInput)
+        private int WriteMessage(ParameterType message, IXLWorksheet worksheet, int currentRow, bool isInput)
         {
             if (message == null)
             {
                 return currentRow;
             }
 
-            opeartionWorksheet.Cell(currentRow, 1).Value = "Message";
-            opeartionWorksheet.Cell(1, 1).Style.Font.Bold = true;
-            opeartionWorksheet.Cell(currentRow, 2).Value = message.Name;
+            worksheet.Cell(currentRow, 1).Value = "Message";
+            worksheet.Cell(1, 1).Style.Font.Bold = true;
+            worksheet.Cell(currentRow, 2).Value = isInput ? message.Name : "Response";
             
             currentRow++;
-            opeartionWorksheet.Cell(currentRow, 1).Value = "Type";
-            opeartionWorksheet.Cell(1, 1).Style.Font.Bold = true;
-            opeartionWorksheet.Cell(currentRow, 2).Value = message.TypeName;
+            worksheet.Cell(currentRow, 1).Value = "Type";
+            worksheet.Cell(1, 1).Style.Font.Bold = true;
+            worksheet.Cell(currentRow, 2).Value = message.TypeName;
 
             currentRow++;
-            opeartionWorksheet.Cell(currentRow, 1).Value = "Mandatory";
-            opeartionWorksheet.Cell(1, 1).Style.Font.Bold = true;
-            opeartionWorksheet.Cell(currentRow, 2).Value = message.IsOptional ? "Yes" : "No";
+            worksheet.Cell(currentRow, 1).Value = "Mandatory";
+            worksheet.Cell(1, 1).Style.Font.Bold = true;
+            worksheet.Cell(currentRow, 2).Value = message.IsOptional ? "No" : "Yes";
 
             currentRow++;
-            opeartionWorksheet.Cell(currentRow, 1).Value = "Fields";
-            opeartionWorksheet.Cell(1, 1).Style.Font.Bold = true;
-            opeartionWorksheet.Cell(currentRow, 2).Value = "List of fields goes here";
+            worksheet.Cell(currentRow, 1).Value = "Fields";
+            worksheet.Cell(1, 1).Style.Font.Bold = true;
+            worksheet.Cell(currentRow, 2).Value = "List of fields goes here";
 
+            if (message.IsComplex)
+            {
+                foreach (var property in message.Properties)
+                {
+                    currentRow++;
+                    worksheet.Cell(currentRow, 1).Value = property.Key;
+                    worksheet.Cell(1, 1).Style.Font.Bold = true;
+                    worksheet.Cell(currentRow, 2).Value = property.Value;
+                }
+            }
+
+
+            
+            currentRow+=2;
+            worksheet.Cell(currentRow, 1).Value = string.Empty;
+            
             return currentRow;
         }
     }
