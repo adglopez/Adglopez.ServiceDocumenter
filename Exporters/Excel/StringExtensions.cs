@@ -2,9 +2,9 @@
 {
     public static class StringExtensions
     {
-        public static string PrependTabs(this string input, int times)
+        public static string PrependDeepLevelIndicator(this string input, int times)
         {
-            const string tab = "\t";
+            const string tab = " -";
             var output = string.Empty;
             for (int i = 0; i < times; i++)
             {

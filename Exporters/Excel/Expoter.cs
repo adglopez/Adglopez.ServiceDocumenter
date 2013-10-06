@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using Adglopez.ServiceDocumenter.Core.Model;
+﻿using Adglopez.ServiceDocumenter.Core.Model;
 using Adglopez.ServiceDocumenter.Core.Metadata;
 using ClosedXML.Excel;
 
@@ -114,13 +113,13 @@ namespace Adglopez.ServiceDocumenter.Exporters.Excel
             worksheet.Cell(currentRow, 2).Value = message.IsOptional ? "No" : "Yes";
 
             currentRow++;
-            worksheet.Cell(currentRow, 1).Value = "Fields";
+            worksheet.Cell(currentRow, 1).Value = "Properties";
             worksheet.Cell(currentRow, 1).Style.Font.Bold = true;
 
             foreach (var property in message.Properties)
             {
                 currentRow++;
-                worksheet.Cell(currentRow, 1).Value = property.Key;
+                worksheet.Cell(currentRow, 1).Value = property.Key.PrependDeepLevelIndicator(1);
                 worksheet.Cell(currentRow, 1).Style.Font.Bold = true;
                 worksheet.Cell(currentRow, 2).Value = property.Value;
             }
@@ -142,21 +141,17 @@ namespace Adglopez.ServiceDocumenter.Exporters.Excel
         private int WriteComplexType(System.Collections.Generic.KeyValuePair<string, ParameterType> child, IXLWorksheet worksheet, int currentRow, int deep)
         {
             currentRow++;
-            worksheet.Cell(currentRow, 1).Value = "Name";
+            worksheet.Cell(currentRow, 1).Value = child.Key.PrependDeepLevelIndicator(deep);
             worksheet.Cell(currentRow, 1).Style.Font.Bold = true;
-            worksheet.Cell(currentRow, 2).Value = child.Key.PrependTabs(deep);
-
-            currentRow++;
-            worksheet.Cell(currentRow, 1).Value = "Type";
-            worksheet.Cell(currentRow, 1).Style.Font.Bold = true;
-            worksheet.Cell(currentRow, 2).Value = child.Value.Name.PrependTabs(deep);
+            worksheet.Cell(currentRow, 2).Value = child.Value.TypeName;
+            worksheet.Cell(currentRow, 2).Style.Font.Bold = true;
 
             foreach (var property in child.Value.Properties)
             {
                 currentRow++;
-                worksheet.Cell(currentRow, 1).Value = property.Key.PrependTabs(deep);
+                worksheet.Cell(currentRow, 1).Value = property.Key.PrependDeepLevelIndicator(deep + 1);
                 worksheet.Cell(currentRow, 1).Style.Font.Bold = true;
-                worksheet.Cell(currentRow, 2).Value = property.Value.PrependTabs(deep);
+                worksheet.Cell(currentRow, 2).Value = property.Value;
             }
             foreach (var nextChild in child.Value.Childs)
             {
