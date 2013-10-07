@@ -7,7 +7,7 @@ namespace Adglopez.ServiceDocumenter.Exporters.Excel
     public static class ClosedXmlExtensions
     {
         public static string EnsureUniqueName(this IXLWorksheets collection, string name)
-        {            
+        {
             if (collection.Any(w => w.Name == name))
             {
                 int counter = 0;
@@ -17,7 +17,7 @@ namespace Adglopez.ServiceDocumenter.Exporters.Excel
                     counter++;
                     name = name + counter;
 
-                    if (collection.Any(w => w.Name == name))
+                    if (collection.All(w => w.Name != name))
                     {
                         return name;
                     }
@@ -41,7 +41,7 @@ namespace Adglopez.ServiceDocumenter.Exporters.Excel
 
         public static IXLWorksheet Clone(this IXLWorksheet worksheet, string name)
         {
-            return  worksheet.CopyTo(worksheet.Workbook, name);
+            return worksheet.CopyTo(worksheet.Workbook, name);
         }
     }
 }

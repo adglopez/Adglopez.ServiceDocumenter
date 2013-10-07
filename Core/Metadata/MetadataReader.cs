@@ -38,7 +38,7 @@ namespace Adglopez.ServiceDocumenter.Core.Metadata
             Type contractInterface = clientProxyType.GetInterfaces().First(i => i.FullName != typeof(ICommunicationObject).FullName && i.FullName != typeof(IDisposable).FullName);
 
             var contract = contracts.Single(c => c.Name == contractInterface.Name);
-            
+
             var modelService = new Service
             {
                 Name = new Uri(url).Segments.Last(),
@@ -72,7 +72,7 @@ namespace Adglopez.ServiceDocumenter.Core.Metadata
             Type clientProxyType;
 
             var assembly = CompileProxy(generator, out clientProxyType);
-            
+
             endpointsPerContract = endpointsForContracts;
             proxyType = clientProxyType;
             proxyAssembly = assembly;
@@ -106,6 +106,8 @@ namespace Adglopez.ServiceDocumenter.Core.Metadata
         }
 
         #region Metadata / Model Methods
+
+        static readonly Stack<string> _recursiveTypes = new Stack<string>();
 
         private void LoadMetadata(string url, out Collection<ContractDescription> contracts, out ServiceEndpointCollection endpoints)
         {
@@ -227,14 +229,14 @@ namespace Adglopez.ServiceDocumenter.Core.Metadata
         private ParameterType RecurseChild(Type type)
         {
             var parameter = new ParameterType
-            {
-                Name = type.Name,
-                TypeName = type.ToString(),
-                IsOut = null,
-                IsCollection = ReflectionHelper.IsCollection(type),
-                Properties = new Dictionary<string, string>(),
-                Childs = new Dictionary<string, ParameterType>()
-            };
+                            {
+                                Name = type.Name,
+                                TypeName = type.ToString(),
+                                IsOut = null,
+                                IsCollection = ReflectionHelper.IsCollection(type),
+                                Properties = new Dictionary<string, string>(),
+                                Childs = new Dictionary<string, ParameterType>()
+                            };
 
             if (parameter.IsCollection)
             {
@@ -251,9 +253,17 @@ namespace Adglopez.ServiceDocumenter.Core.Metadata
                 }
                 else
                 {
-                    if (paramPropertyType.FullName != typeof(ExtensionDataObject).FullName)
+                    if (paramPropertyType.FullName != typeof (ExtensionDataObject).FullName)
                     {
+
+                        if (_recursiveTypes.Count != 0 && paramPropertyType.FullName == _recursiveTypes.Peek())
+                            continue;
+
+                        _recursiveTypes.Push(paramPropertyType.FullName);
+
                         parameter.Childs.Add(paramProperty.Name, RecurseChild(paramPropertyType));
+
+                        _recursiveTypes.Pop();
                     }
                 }
             }
@@ -320,7 +330,7 @@ namespace Adglopez.ServiceDocumenter.Core.Metadata
             }
 
             return results.CompiledAssembly;
-        }        
+        }
 
         private object InstantiateProxy(Assembly asembly, Type clientProxyType, ServiceEndpoint serviceEndpoint)
         {
@@ -336,7 +346,7 @@ namespace Adglopez.ServiceDocumenter.Core.Metadata
 
             return instance;
         }
-                
+
         #endregion
     }
 }

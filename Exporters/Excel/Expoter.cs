@@ -6,7 +6,7 @@ namespace Adglopez.ServiceDocumenter.Exporters.Excel
 {
     public class Expoter : IExporter
     {
-        private const string TemplatePath = @"..\..\..\Assets\Template.xlsx";
+        private const string TemplatePath = @"Assets\Template.xlsx";
 
         public void Export(Service service, string connectionString)
         {
@@ -32,8 +32,17 @@ namespace Adglopez.ServiceDocumenter.Exporters.Excel
 
                 foreach (var operation in service.Operations)
                 {
+                    var name = operation.Name;
+                    // This is due to a limit in the lenght of the spreadsheets names
+                    if (name.Length >= 31)
+                    {
+                        // TODO: This should be determined automatically.
+                        name = name.Substring(0, 25);
+                    }
                     // Write Opeation (general info)
-                    var opeartionWorksheetName = workBook.Worksheets.EnsureUniqueName(operation.Name);
+                    var opeartionWorksheetName = workBook.Worksheets.EnsureUniqueName(name);
+
+
                     var operationWorksheet = workBook.Worksheet("Operation").CopyTo(opeartionWorksheetName);
 
                     operationWorksheet.Cell(1, 1).Value = "Operation";
@@ -157,7 +166,7 @@ namespace Adglopez.ServiceDocumenter.Exporters.Excel
                 worksheet.Cell(currentRow, 1).Style.Font.Bold = true;
                 worksheet.Cell(currentRow, 2).Value = property.Value;
             }
-            
+
             foreach (var nextChild in child.Value.Childs)
             {
                 currentRow = WriteComplexType(nextChild, worksheet, currentRow, deep + 1);
