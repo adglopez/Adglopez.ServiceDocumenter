@@ -107,8 +107,6 @@ namespace Adglopez.ServiceDocumenter.Core.Metadata
 
         #region Metadata / Model Methods
 
-        static readonly Stack<string> _recursiveTypes = new Stack<string>();
-
         private void LoadMetadata(string url, out Collection<ContractDescription> contracts, out ServiceEndpointCollection endpoints)
         {
             url = url.EndsWith(".svc", StringComparison.InvariantCultureIgnoreCase) ? url + "?wsdl" : url;
@@ -229,14 +227,14 @@ namespace Adglopez.ServiceDocumenter.Core.Metadata
         private ParameterType RecurseChild(Type type)
         {
             var parameter = new ParameterType
-                            {
-                                Name = type.Name,
-                                TypeName = type.ToString(),
-                                IsOut = null,
-                                IsCollection = ReflectionHelper.IsCollection(type),
-                                Properties = new Dictionary<string, string>(),
-                                Childs = new Dictionary<string, ParameterType>()
-                            };
+            {
+                Name = type.Name,
+                TypeName = type.ToString(),
+                IsOut = null,
+                IsCollection = ReflectionHelper.IsCollection(type),
+                Properties = new Dictionary<string, string>(),
+                Childs = new Dictionary<string, ParameterType>()
+            };
 
             if (parameter.IsCollection)
             {
@@ -253,25 +251,23 @@ namespace Adglopez.ServiceDocumenter.Core.Metadata
                 }
                 else
                 {
-                    if (paramPropertyType.FullName != typeof (ExtensionDataObject).FullName)
+                    if (paramPropertyType.FullName != typeof(ExtensionDataObject).FullName)
                     {
-
-                        if (_recursiveTypes.Count != 0 && paramPropertyType.FullName == _recursiveTypes.Peek())
-                            continue;
-
-                        _recursiveTypes.Push(paramPropertyType.FullName);
-
-                        parameter.Childs.Add(paramProperty.Name, RecurseChild(paramPropertyType));
-
-                        _recursiveTypes.Pop();
+                        if (!_recursiveChilds.Contains(new KeyValuePair<string, string>(paramProperty.Name, paramPropertyType.FullName)))
+                        {
+                            _recursiveChilds.Add(new KeyValuePair<string, string>(paramProperty.Name, paramPropertyType.FullName));
+                            parameter.Childs.Add(paramProperty.Name, RecurseChild(paramPropertyType));
+                            _recursiveChilds.Remove(new KeyValuePair<string, string>(paramProperty.Name, paramPropertyType.FullName));
+                        }
                     }
                 }
             }
 
             return parameter;
         }
-
         #endregion
+
+        readonly List<KeyValuePair<string, string>> _recursiveChilds = new List<KeyValuePair<string, string>>();
 
         #region Dynamic Proxy Methods
 
