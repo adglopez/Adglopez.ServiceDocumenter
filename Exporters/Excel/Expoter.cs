@@ -1,17 +1,18 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using ClosedXML.Excel;
 using Adglopez.ServiceDocumenter.Core.Model;
 using Adglopez.ServiceDocumenter.Core.Metadata;
+using DocumentFormat.OpenXml.Drawing.ChartDrawing;
+using DocumentFormat.OpenXml.Spreadsheet;
 
 namespace Adglopez.ServiceDocumenter.Exporters.Excel
 {
     public class Expoter : IExporter
     {
-        private const string TemplatePath = @"Assets\Template.xlsx";
-
         public void Export(Service service, string connectionString)
         {
-            using (var workBook = new ClosedXML.Excel.XLWorkbook(TemplatePath))
+            using (var workBook = new ClosedXML.Excel.XLWorkbook())
             {
                 WriteSummary(service, workBook);
 
@@ -20,21 +21,36 @@ namespace Adglopez.ServiceDocumenter.Exporters.Excel
                     WriteOperation(operation, workBook);
                 }
 
-                workBook.Worksheet("Operation").Delete();
-
                 workBook.Save(connectionString);
-                workBook.Use1904DateSystem = false;
             }
         }
 
         private void WriteSummary(Service service, XLWorkbook workBook)
         {
-            var summaryWorksheet = workBook.Worksheet("Summary");
+            var summaryWorksheet = workBook.Worksheets.Add("Summary");
 
+            summaryWorksheet.Cell(1, 1).Value = service.Name = "service.Name";
+            summaryWorksheet.Cell(2, 1).Value = service.Name = "Namespace";
+            summaryWorksheet.Cell(3, 1).Value = service.Name = "Url";
+            summaryWorksheet.Cell(4, 1).Value = service.Name = "Contract";
+            summaryWorksheet.Cell(4, 1).Value = service.Name = "Endpoints";
+            summaryWorksheet.Cell(5, 2).Value = service.Name = "Name";
+            summaryWorksheet.Cell(5, 3).Value = service.Name = "Binding";
+            summaryWorksheet.Cell(5, 4).Value = service.Name = "Address";
+            
             summaryWorksheet.Cell(1, 2).Value = service.Name = service.Name;
             summaryWorksheet.Cell(2, 2).Value = service.Name = service.Namespace;
             summaryWorksheet.Cell(3, 2).Value = service.Name = service.Url;
             summaryWorksheet.Cell(4, 2).Value = service.Name = service.Contract;
+
+            StyleToInfoLabel(summaryWorksheet.Cell(1, 1));
+            StyleToInfoLabel(summaryWorksheet.Cell(2, 1));
+            StyleToInfoLabel(summaryWorksheet.Cell(3, 1));
+            StyleToInfoLabel(summaryWorksheet.Cell(4, 1));
+            StyleToInfoLabel(summaryWorksheet.Cell(4, 1));
+            StyleToInfoLabel(summaryWorksheet.Cell(5, 2));
+            StyleToInfoLabel(summaryWorksheet.Cell(5, 3));
+            StyleToInfoLabel(summaryWorksheet.Cell(5, 4));
 
             for (int idx = 0; idx < service.Endpoints.Count; idx++)
             {
@@ -42,6 +58,7 @@ namespace Adglopez.ServiceDocumenter.Exporters.Excel
                 summaryWorksheet.Cell(6 + idx, 3).Value = string.Format("{0} ({1})", service.Endpoints[idx].Binding.Name, service.Endpoints[idx].Binding.Type);
                 summaryWorksheet.Cell(6 + idx, 4).Value = service.Endpoints[idx].Address;
 
+                summaryWorksheet.Column(1).AdjustToContents();
                 summaryWorksheet.Column(2).AdjustToContents();
                 summaryWorksheet.Column(3).AdjustToContents();
                 summaryWorksheet.Column(4).AdjustToContents();
@@ -51,6 +68,7 @@ namespace Adglopez.ServiceDocumenter.Exporters.Excel
         private void WriteOperation(Operation operation, XLWorkbook workBook)
         {
             var name = operation.Name;
+            
             // This is due to a limit in the lenght of the spreadsheets names
             if (name.Length >= 31)
             {
@@ -58,13 +76,11 @@ namespace Adglopez.ServiceDocumenter.Exporters.Excel
                 name = name.Substring(0, 25);
             }
             // Write Opeation (general info)
-            var opeartionWorksheetName = workBook.Worksheets.EnsureUniqueName(name);
-
-
-            var operationWorksheet = workBook.Worksheet("Operation").CopyTo(opeartionWorksheetName);
+            var operationWorksheetName = workBook.Worksheets.EnsureUniqueName(name);
+            var operationWorksheet = workBook.Worksheets.Add(operationWorksheetName);
 
             operationWorksheet.Cell(1, 1).Value = "Operation";
-            operationWorksheet.Cell(1, 1).Style.Font.Bold = true;
+            StyleToInfoLabel(operationWorksheet.Cell(1, 1));
             operationWorksheet.Cell(1, 2).Value = operation.Name;
 
             // Operation (detailed info)
@@ -103,7 +119,10 @@ namespace Adglopez.ServiceDocumenter.Exporters.Excel
             }
 
             operationWorksheet.Cell(currentRow + 1, 1).Value = string.Empty;
+            operationWorksheet.Column(1).AdjustToContents();
             operationWorksheet.Column(2).AdjustToContents();
+            operationWorksheet.Column(3).AdjustToContents();
+            operationWorksheet.Column(4).AdjustToContents();
         }
 
         private int WriteMessage(ParameterType message, IXLWorksheet worksheet, int currentRow, bool isInput)
@@ -154,7 +173,7 @@ namespace Adglopez.ServiceDocumenter.Exporters.Excel
             return currentRow;
         }
 
-        private int WriteComplexType(System.Collections.Generic.KeyValuePair<string, ParameterType> child, IXLWorksheet worksheet, int currentRow, int deep)
+        private int WriteComplexType(KeyValuePair<string, ParameterType> child, IXLWorksheet worksheet, int currentRow, int deep)
         {
             currentRow++;
             worksheet.Cell(currentRow, 1).Value = child.Key.PrependDeepLevelIndicator(deep);
@@ -171,6 +190,12 @@ namespace Adglopez.ServiceDocumenter.Exporters.Excel
             }
 
             return child.Value.Childs.Aggregate(currentRow, (current, nextChild) => WriteComplexType(nextChild, worksheet, current, deep + 1));
+        }
+
+        private void StyleToInfoLabel(IXLCell cell)
+        {
+            cell.Style.Font.Bold = true;
+            cell.Style.Fill.BackgroundColor = XLColor.GoldenYellow;
         }
     }
 }

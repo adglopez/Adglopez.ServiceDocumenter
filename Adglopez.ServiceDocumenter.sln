@@ -16,16 +16,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{7D983B
 		.nuget\NuGet.targets = .nuget\NuGet.targets
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Console", "Console\Console.csproj", "{AD5140B2-ED43-4364-934A-BEDB664381E3}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{9F5DB5D4-B48B-4A5B-A578-A39A1C92FA89}"
 	ProjectSection(SolutionItems) = preProject
 		read me.txt = read me.txt
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Windows", "Windows\Windows.csproj", "{C6FC83FB-5A69-4C1F-BA97-647E34F19D43}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Apps", "Apps", "{4F8DAA9A-95AF-429B-86D3-673F82536EA9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,10 +41,6 @@ Global
 		{4D7B7B72-2CFF-4703-902B-9A477F871036}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4D7B7B72-2CFF-4703-902B-9A477F871036}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4D7B7B72-2CFF-4703-902B-9A477F871036}.Release|Any CPU.Build.0 = Release|Any CPU
-		{AD5140B2-ED43-4364-934A-BEDB664381E3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{AD5140B2-ED43-4364-934A-BEDB664381E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{AD5140B2-ED43-4364-934A-BEDB664381E3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{AD5140B2-ED43-4364-934A-BEDB664381E3}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C6FC83FB-5A69-4C1F-BA97-647E34F19D43}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C6FC83FB-5A69-4C1F-BA97-647E34F19D43}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C6FC83FB-5A69-4C1F-BA97-647E34F19D43}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -59,7 +51,5 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{EAE71554-1838-48AB-A7DA-18BF447FEB7E} = {8F6BD82F-9E4E-4BFA-99EA-EF5D8C31EC14}
-		{AD5140B2-ED43-4364-934A-BEDB664381E3} = {4F8DAA9A-95AF-429B-86D3-673F82536EA9}
-		{C6FC83FB-5A69-4C1F-BA97-647E34F19D43} = {4F8DAA9A-95AF-429B-86D3-673F82536EA9}
 	EndGlobalSection
 EndGlobal
