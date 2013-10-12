@@ -1,10 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+
 using ClosedXML.Excel;
 using Adglopez.ServiceDocumenter.Core.Model;
 using Adglopez.ServiceDocumenter.Core.Metadata;
-using DocumentFormat.OpenXml.Drawing.ChartDrawing;
-using DocumentFormat.OpenXml.Spreadsheet;
 
 namespace Adglopez.ServiceDocumenter.Exporters.Excel
 {
@@ -14,8 +13,10 @@ namespace Adglopez.ServiceDocumenter.Exporters.Excel
         {
             using (var workBook = new ClosedXML.Excel.XLWorkbook())
             {
+                // "Summary" worksheet.
                 WriteSummary(service, workBook);
 
+                // Creates a worksheet per Operation. This also renders messages schema
                 foreach (var operation in service.Operations)
                 {
                     WriteOperation(operation, workBook);
@@ -25,23 +26,24 @@ namespace Adglopez.ServiceDocumenter.Exporters.Excel
             }
         }
 
+        #region Render Information
         private void WriteSummary(Service service, XLWorkbook workBook)
         {
             var summaryWorksheet = workBook.Worksheets.Add("Summary");
 
-            summaryWorksheet.Cell(1, 1).Value = service.Name = "service.Name";
-            summaryWorksheet.Cell(2, 1).Value = service.Name = "Namespace";
-            summaryWorksheet.Cell(3, 1).Value = service.Name = "Url";
-            summaryWorksheet.Cell(4, 1).Value = service.Name = "Contract";
-            summaryWorksheet.Cell(4, 1).Value = service.Name = "Endpoints";
-            summaryWorksheet.Cell(5, 2).Value = service.Name = "Name";
-            summaryWorksheet.Cell(5, 3).Value = service.Name = "Binding";
-            summaryWorksheet.Cell(5, 4).Value = service.Name = "Address";
-            
-            summaryWorksheet.Cell(1, 2).Value = service.Name = service.Name;
-            summaryWorksheet.Cell(2, 2).Value = service.Name = service.Namespace;
-            summaryWorksheet.Cell(3, 2).Value = service.Name = service.Url;
-            summaryWorksheet.Cell(4, 2).Value = service.Name = service.Contract;
+            summaryWorksheet.Cell(1, 1).Value = "service.Name";
+            summaryWorksheet.Cell(2, 1).Value = "Namespace";
+            summaryWorksheet.Cell(3, 1).Value = "Url";
+            summaryWorksheet.Cell(4, 1).Value = "Contract";
+            summaryWorksheet.Cell(4, 1).Value = "Endpoints";
+            summaryWorksheet.Cell(5, 2).Value = "Name";
+            summaryWorksheet.Cell(5, 3).Value = "Binding";
+            summaryWorksheet.Cell(5, 4).Value = "Address";
+
+            summaryWorksheet.Cell(1, 2).Value = service.Name;
+            summaryWorksheet.Cell(2, 2).Value = service.Namespace;
+            summaryWorksheet.Cell(3, 2).Value = service.Url;
+            summaryWorksheet.Cell(4, 2).Value = service.Contract;
 
             StyleToInfoLabel(summaryWorksheet.Cell(1, 1));
             StyleToInfoLabel(summaryWorksheet.Cell(2, 1));
@@ -57,18 +59,18 @@ namespace Adglopez.ServiceDocumenter.Exporters.Excel
                 summaryWorksheet.Cell(6 + idx, 2).Value = service.Endpoints[idx].Name;
                 summaryWorksheet.Cell(6 + idx, 3).Value = string.Format("{0} ({1})", service.Endpoints[idx].Binding.Name, service.Endpoints[idx].Binding.Type);
                 summaryWorksheet.Cell(6 + idx, 4).Value = service.Endpoints[idx].Address;
-
-                summaryWorksheet.Column(1).AdjustToContents();
-                summaryWorksheet.Column(2).AdjustToContents();
-                summaryWorksheet.Column(3).AdjustToContents();
-                summaryWorksheet.Column(4).AdjustToContents();
             }
+
+            summaryWorksheet.Column(1).AdjustToContents();
+            summaryWorksheet.Column(2).AdjustToContents();
+            summaryWorksheet.Column(3).AdjustToContents();
+            summaryWorksheet.Column(4).AdjustToContents();
         }
 
         private void WriteOperation(Operation operation, XLWorkbook workBook)
         {
             var name = operation.Name;
-            
+
             // This is due to a limit in the lenght of the spreadsheets names
             if (name.Length >= 31)
             {
@@ -86,9 +88,10 @@ namespace Adglopez.ServiceDocumenter.Exporters.Excel
             // Operation (detailed info)
             const int initialRow = 4;
             int currentRow = initialRow;
+
             operationWorksheet.Cell(currentRow, 1).Value = "INPUTS";
-            operationWorksheet.Cell(currentRow, 1).Style.Font.Bold = true;
-            operationWorksheet.Cell(currentRow, 1).Style.Fill.BackgroundColor = XLColor.Gray;
+            StyleToDirectionType(operationWorksheet.Cell(currentRow, 1));
+
             currentRow++;
 
             // Write Input Messages
@@ -104,8 +107,7 @@ namespace Adglopez.ServiceDocumenter.Exporters.Excel
 
             // Write Ouptus Messages
             operationWorksheet.Cell(currentRow, 1).Value = "OUTPUTS";
-            operationWorksheet.Cell(currentRow, 1).Style.Font.Bold = true;
-            operationWorksheet.Cell(currentRow, 1).Style.Fill.BackgroundColor = XLColor.Gray;
+            StyleToDirectionType(operationWorksheet.Cell(currentRow, 1));
             currentRow++;
 
             if (operation.Output.Count == 0)
@@ -133,17 +135,20 @@ namespace Adglopez.ServiceDocumenter.Exporters.Excel
             }
 
             worksheet.Cell(currentRow, 1).Value = "Message";
-            worksheet.Cell(currentRow, 1).Style.Font.Bold = true;
+            StyleToBold(worksheet.Cell(currentRow, 1));
+
             worksheet.Cell(currentRow, 2).Value = isInput ? message.Name : "response";
 
             currentRow++;
             worksheet.Cell(currentRow, 1).Value = "Type";
-            worksheet.Cell(currentRow, 1).Style.Font.Bold = true;
+            StyleToBold(worksheet.Cell(currentRow, 1));
+
             worksheet.Cell(currentRow, 2).Value = message.TypeName;
 
             currentRow++;
             worksheet.Cell(currentRow, 1).Value = "Mandatory";
-            worksheet.Cell(currentRow, 1).Style.Font.Bold = true;
+            StyleToBold(worksheet.Cell(currentRow, 1));
+
             worksheet.Cell(currentRow, 2).Value = message.IsOptional ? "No" : "Yes";
 
             if (!message.IsComplex)
@@ -152,16 +157,16 @@ namespace Adglopez.ServiceDocumenter.Exporters.Excel
                 return currentRow;
             }
 
-            currentRow++;
-            currentRow++;
+            currentRow += 2;
+
             worksheet.Cell(currentRow, 1).Value = "Properties";
-            worksheet.Cell(currentRow, 1).Style.Font.Bold = true;
+            StyleToBold(worksheet.Cell(currentRow, 1));
 
             foreach (var property in message.Properties)
             {
                 currentRow++;
                 worksheet.Cell(currentRow, 1).Value = property.Key.PrependDeepLevelIndicator(1);
-                worksheet.Cell(currentRow, 1).Style.Font.Bold = true;
+                StyleToBold(worksheet.Cell(currentRow, 1));
                 worksheet.Cell(currentRow, 2).Value = property.Value;
             }
 
@@ -176,26 +181,42 @@ namespace Adglopez.ServiceDocumenter.Exporters.Excel
         private int WriteComplexType(KeyValuePair<string, ParameterType> child, IXLWorksheet worksheet, int currentRow, int deep)
         {
             currentRow++;
+
             worksheet.Cell(currentRow, 1).Value = child.Key.PrependDeepLevelIndicator(deep);
-            worksheet.Cell(currentRow, 1).Style.Font.Bold = true;
+            StyleToBold(worksheet.Cell(currentRow, 1));
+
             worksheet.Cell(currentRow, 2).Value = child.Value.TypeName;
-            worksheet.Cell(currentRow, 2).Style.Font.Bold = true;
+            StyleToBold(worksheet.Cell(currentRow, 2));
 
             foreach (var property in child.Value.Properties)
             {
                 currentRow++;
                 worksheet.Cell(currentRow, 1).Value = property.Key.PrependDeepLevelIndicator(deep + 1);
-                worksheet.Cell(currentRow, 1).Style.Font.Bold = true;
                 worksheet.Cell(currentRow, 2).Value = property.Value;
+                StyleToBold(worksheet.Cell(currentRow, 1));
             }
 
             return child.Value.Childs.Aggregate(currentRow, (current, nextChild) => WriteComplexType(nextChild, worksheet, current, deep + 1));
-        }
+        } 
+        #endregion
 
+        #region Styles
         private void StyleToInfoLabel(IXLCell cell)
         {
             cell.Style.Font.Bold = true;
             cell.Style.Fill.BackgroundColor = XLColor.GoldenYellow;
         }
+
+        private void StyleToBold(IXLCell cell)
+        {
+            cell.Style.Font.Bold = true;
+        }
+
+        private void StyleToDirectionType(IXLCell cell)
+        {
+            cell.Style.Font.Bold = true;
+            cell.Style.Fill.BackgroundColor = XLColor.Gray;
+        } 
+        #endregion
     }
 }
