@@ -119,6 +119,8 @@ namespace Adglopez.ServiceDocumenter.Core.Metadata
             var binding = new WSHttpBinding(SecurityMode.None) { MaxReceivedMessageSize = 50000000 };
 
             var mexClient = new MetadataExchangeClient(binding);
+            
+            mexClient.MaximumResolvedReferences = int.MaxValue;
 
             // For MEX endpoints use a MEX address and a mexMode of .MetadataExchange
             MetadataSet metaSet = mexClient.GetMetadata(mexAddress, MetadataExchangeClientMode.HttpGet);
